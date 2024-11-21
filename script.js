@@ -70,13 +70,17 @@ createAnchor(0, 0, 0, 0xff0000); // Red cube at the center
 createAnchor(5, 0, 5, 0x0000ff); // Blue cube at (5, 0, 5)
 createAnchor(-5, 0, -5, 0xffff00); // Yellow cube at (-5, 0, -5)
 
-// Animation Loop
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate the Cube
+  // Rotate the main cube
   cube.rotation.x += 0.01;
   cube.rotation.y += 0.01;
+
+  // Rotate each anchor
+  anchors.forEach((anchor) => {
+    anchor.rotation.y += 0.01; // Spin the anchor on its Y-axis
+  });
 
   renderer.render(scene, camera);
 }
