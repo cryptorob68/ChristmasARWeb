@@ -1,6 +1,47 @@
 // Import Three.js as an ES Module
 import * as THREE from './libs/three.module.js';
 
+// Audio Setup
+const audioListener = new THREE.AudioListener(); // Add listener to the camera
+camera.add(audioListener);
+
+const sound = new THREE.Audio(audioListener); // Create the audio source
+const audioLoader = new THREE.AudioLoader(); // Load the audio file
+audioLoader.load('./assets/audio.mp3', (buffer) => {
+  sound.setBuffer(buffer);
+  sound.setLoop(false); // Play once
+  sound.setVolume(0.5);
+});
+
+// Event Listener for Tap Interactivity
+window.addEventListener('touchstart', (event) => {
+  // Convert Touch Position to Normalized Device Coordinates
+  const touch = event.touches[0];
+  const mouse = new THREE.Vector2(
+    (touch.clientX / window.innerWidth) * 2 - 1,
+    -(touch.clientY / window.innerHeight) * 2 + 1
+  );
+
+  // Update the Raycaster
+  raycaster.setFromCamera(mouse, camera);
+
+  // Find Intersections
+  const intersects = raycaster.intersectObjects(scene.children, true);
+
+  // Play Audio on Tap
+  if (intersects.length > 0) {
+    const tappedObject = intersects[0].object;
+
+    // Optional: Change Color on Tap
+    tappedObject.material.color.set(0xff00ff); // Purple for feedback
+
+    // Play the audio
+    if (!sound.isPlaying) {
+      sound.play();
+    }
+  }
+});
+
 // Initialize the Three.js Scene
 const scene = new THREE.Scene();
 
