@@ -30,7 +30,8 @@ const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 // Position the Camera
-camera.position.z = 5;
+camera.position.set(10, 15, 20); // Move the camera higher and back
+camera.lookAt(0, 0, 0);         // Point it toward the center of the grid
 
 // Animation Loop
 function animate() {
