@@ -48,27 +48,32 @@ cube.position.set(0, 0.5, 0); // Slightly above the grid center
 const anchors = [];
 
 // Function to Create Anchors and Add Objects
-function createAnchor(x, y, z, color) {
+function createAnchor(x, y, z, color, shape = 'cube') {
   const anchor = new THREE.Object3D();
   anchor.position.set(x, y, z); // Position the anchor
   scene.add(anchor);
 
-  // Add a Cube to the Anchor
-  const geometry = new THREE.BoxGeometry();
-  const material = new THREE.MeshBasicMaterial({ color });
-  const cube = new THREE.Mesh(geometry, material);
-  anchor.add(cube);
+  // Choose geometry based on the shape
+  let geometry;
+  if (shape === 'cube') geometry = new THREE.BoxGeometry();
+  else if (shape === 'sphere') geometry = new THREE.SphereGeometry(0.5, 32, 32);
+  else if (shape === 'cone') geometry = new THREE.ConeGeometry(0.5, 1, 32);
 
-  // Slightly raise the cube above the grid
-  cube.position.set(0, 0.5, 0);
+  const material = new THREE.MeshBasicMaterial({ color });
+  const mesh = new THREE.Mesh(geometry, material);
+  anchor.add(mesh);
+
+  // Slightly raise the object above the grid
+  mesh.position.set(0, 0.5, 0);
 
   anchors.push(anchor);
 }
 
-// Add Anchors with Different Colors and Positions
-createAnchor(0, 0, 0, 0xff0000); // Red cube at the center
-createAnchor(5, 0, 5, 0x0000ff); // Blue cube at (5, 0, 5)
-createAnchor(-5, 0, -5, 0xffff00); // Yellow cube at (-5, 0, -5)
+// Add Anchors with Different Shapes and Colors
+createAnchor(0, 0, 0, 0xff0000, 'cube');    // Red cube
+createAnchor(5, 0, 5, 0x0000ff, 'sphere'); // Blue sphere
+createAnchor(-5, 0, -5, 0xffff00, 'cone'); // Yellow cone
+
 
 function animate() {
   requestAnimationFrame(animate);
