@@ -79,9 +79,9 @@ function createAnchor(x, y, z, color, shape = 'cube', audioFile = null) {
 
 // Add Objects with Audio
 createAnchor(0, 0, 0, 0x00ff00, 'cube'); // Central green cube (no audio)
-createAnchor(0, 5, 0, 0xff0000, 'cube', './assets/audio1.mp3'); // Red cube with audio
-createAnchor(5, 0, 5, 0x0000ff, 'sphere', './assets/audio2.mp3'); // Blue sphere with audio
-createAnchor(-5, 0, -5, 0xffff00, 'cone', './assets/audio3.mp3'); // Yellow cone with audio
+createAnchor(0, 5, 0, 0xff0000, 'cube', './assets/xmasmusic.mp3'); // Red cube with audio
+createAnchor(5, 0, 5, 0x0000ff, 'sphere', './assets/xmasmusic.mp3'); // Blue sphere with audio
+createAnchor(-5, 0, -5, 0xffff00, 'cone', './assets/xmasmusic.mp3'); // Yellow cone with audio
 
 // Animation Loop
 function animate() {
