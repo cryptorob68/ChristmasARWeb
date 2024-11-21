@@ -1,6 +1,14 @@
 // Import Three.js as an ES Module
 import * as THREE from './libs/three.module.js';
 
+// Unlock audio context for Safari
+const audioContext = THREE.AudioContext.getContext();
+document.body.addEventListener('touchstart', () => {
+  if (audioContext.state !== 'running') {
+    audioContext.resume();
+  }
+}, { once: true });
+
 // Scene Initialization
 const scene = new THREE.Scene();
 
@@ -99,7 +107,7 @@ function animate() {
 animate();
 
 // Interactivity for Tap Events
-window.addEventListener('touchstart', (event) => {
+renderer.domElement.addEventListener('touchstart', (event) => {
   // Convert touch position to normalized device coordinates
   const touch = event.touches[0];
   mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
