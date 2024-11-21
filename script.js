@@ -1,4 +1,7 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
+import * as THREE from './libs/three.module.js';
+
+// The rest of your Three.js code remains the same.
+
 
 // Initialize the Three.js Scene
 const scene = new THREE.Scene();
