@@ -7,7 +7,7 @@ import * as THREE from './libs/three.module.js';
 const scene = new THREE.Scene();
 
 // Add a Grid Helper to the Scene
-const gridHelper = new THREE.GridHelper(50, 50, 0xff0000, 0x00ff00); // Red for main lines, green for secondary
+const gridHelper = new THREE.GridHelper(150, 150, 0xff0000, 0x00ff00); // Red for main lines, green for secondary
 scene.add(gridHelper);
 
 // Create a Camera
