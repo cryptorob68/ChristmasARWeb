@@ -41,7 +41,6 @@ const audioListener = new THREE.AudioListener();
 camera.add(audioListener);
 
 const audioLoader = new THREE.AudioLoader();
-const audioMap = {}; // Store audio objects by object ID
 
 // Function to Create Anchors and Add Objects
 function createAnchor(x, y, z, color, shape = 'cube', audioFile = null) {
@@ -77,11 +76,11 @@ function createAnchor(x, y, z, color, shape = 'cube', audioFile = null) {
   return mesh; // Return the object for reference
 }
 
-// Add Objects with Audio
+// Add Objects with Unique Audio
 createAnchor(0, 0, 0, 0x00ff00, 'cube'); // Central green cube (no audio)
-createAnchor(0, 5, 0, 0xff0000, 'cube', './assets/xmasmusic.mp3'); // Red cube with audio
-createAnchor(5, 0, 5, 0x0000ff, 'sphere', './assets/xmasmusic.mp3'); // Blue sphere with audio
-createAnchor(-5, 0, -5, 0xffff00, 'cone', './assets/xmasmusic.mp3'); // Yellow cone with audio
+createAnchor(0, 5, 0, 0xff0000, 'cube', './assets/xmasmusic.mp3'); // Red cube with xmasmusic.mp3
+createAnchor(5, 0, 5, 0x0000ff, 'sphere', './assets/audio2.mp3'); // Blue sphere with audio2.mp3
+createAnchor(-5, 0, -5, 0xffff00, 'cone', './assets/audio3.mp3'); // Yellow cone with audio3.mp3
 
 // Animation Loop
 function animate() {
