@@ -19,7 +19,7 @@ camera.lookAt(0, 0, 0);         // Point the camera toward the center of the sce
 // Create a WebGL Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0xeeeeee); // Light grey background
+renderer.setClearColor(0x222222); // Dark grey background
 document.body.appendChild(renderer.domElement);
 
 // Add a Grid Helper to the Scene
