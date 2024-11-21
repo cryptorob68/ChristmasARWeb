@@ -44,6 +44,32 @@ scene.add(cube);
 // Position the Cube Slightly Above the Grid
 cube.position.set(0, 0.5, 0); // Slightly above the grid center
 
+// Create Multiple Anchors with Objects
+const anchors = [];
+
+// Function to Create Anchors and Add Objects
+function createAnchor(x, y, z, color) {
+  const anchor = new THREE.Object3D();
+  anchor.position.set(x, y, z); // Position the anchor
+  scene.add(anchor);
+
+  // Add a Cube to the Anchor
+  const geometry = new THREE.BoxGeometry();
+  const material = new THREE.MeshBasicMaterial({ color });
+  const cube = new THREE.Mesh(geometry, material);
+  anchor.add(cube);
+
+  // Slightly raise the cube above the grid
+  cube.position.set(0, 0.5, 0);
+
+  anchors.push(anchor);
+}
+
+// Add Anchors with Different Colors and Positions
+createAnchor(0, 0, 0, 0xff0000); // Red cube at the center
+createAnchor(5, 0, 5, 0x0000ff); // Blue cube at (5, 0, 5)
+createAnchor(-5, 0, -5, 0xffff00); // Yellow cube at (-5, 0, -5)
+
 // Animation Loop
 function animate() {
   requestAnimationFrame(animate);
