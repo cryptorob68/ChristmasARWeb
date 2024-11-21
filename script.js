@@ -70,7 +70,7 @@ function createAnchor(x, y, z, color, shape = 'cube') {
 }
 
 // Add Anchors with Different Shapes and Colors
-createAnchor(0, 0, 0, 0xff0000, 'cube');    // Red cube
+createAnchor(0, 5, 0, 0xff0000, 'cube');    // Red cube
 createAnchor(5, 0, 5, 0x0000ff, 'sphere'); // Blue sphere
 createAnchor(-5, 0, -5, 0xffff00, 'cone'); // Yellow cone
 
