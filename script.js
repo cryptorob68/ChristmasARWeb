@@ -6,6 +6,10 @@ import * as THREE from './libs/three.module.js';
 // Initialize the Three.js Scene
 const scene = new THREE.Scene();
 
+// Add a Grid Helper to the Scene
+const gridHelper = new THREE.GridHelper(20, 20); // Size: 20 units, Divisions: 20
+scene.add(gridHelper);
+
 // Create a Camera
 const camera = new THREE.PerspectiveCamera(
   75, // Field of View
