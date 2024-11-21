@@ -4,11 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Christmas AR Scene</title>
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="ar-scene"></div>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.154.0/build/three.min.js"></script>
-  <script src="app.js"></script>
+  <script type="module">
+    import * as THREE from 'https://cdn.skypack.dev/three';
+
+    // Initialize the Three.js Scene
+    const scene = new THREE.Scene();
+
+    // Create a Camera
+    const camera = new THREE.PerspectiveCamera(
+      75, // Field of View
+      window.innerWidth / window.innerHeight, // Aspect Ratio
+      0.1, // Near Clipping Plane
+      1000 // Far Clipping Plane
+    );
+
+    // Create a WebGL Renderer
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Add a Basic Cube (for testing)
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    // Position the Camera
+    camera.position.z = 5;
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Rotate the Cube
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
 </body>
 </html>
