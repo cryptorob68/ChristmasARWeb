@@ -1,5 +1,4 @@
-// Import Three.js as an ES Module
-import * as THREE from 'https://cdn.skypack.dev/three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
 
 // Initialize the Three.js Scene
 const scene = new THREE.Scene();
