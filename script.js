@@ -22,6 +22,14 @@ scene.add(directionalLight);
 const gridHelper = new THREE.GridHelper(50, 50, 0xff0000, 0x00ff00);
 scene.add(gridHelper);
 
+// Load Audio Files
+const audioFiles = {
+  santa: './assets/xmasmusic.mp3',       // Santa's audio
+  grinch: './assets/grinch_audio.mp3',  // Grinch's audio
+  elf: './assets/elf_audio.mp3',        // Elf's audio
+  rudolf: './assets/rudolf_audio.mp3',  // Rudolf's audio
+};
+
 // Load Santa Model
 const loader = new GLTFLoader();
 loader.load('./assets/Santa.glb', (gltf) => {
