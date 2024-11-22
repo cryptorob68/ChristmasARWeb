@@ -61,7 +61,7 @@ const audioFiles = {
   santa: './assets/santa_audio.mp3',
   grinch: './assets/grinch_audio.mp3',
   elf: './assets/elf_audio.mp3',
-  reindeer: './assets/reindeer_audio.mp3',
+  rudolf: './assets/rudolf_audio.mp3',
 };
 
 Object.keys(audioFiles).forEach((key) => {
@@ -100,7 +100,7 @@ function createCharacter(x, y, z, modelFile, scale, audioKey) {
 createCharacter(0, 0, 0, './assets/santa.glb', 1.5, 'santa'); // Santa
 createCharacter(5, 0, 5, './assets/grinch.glb', 1.2, 'grinch'); // Grinch
 createCharacter(-5, 0, -5, './assets/elf.glb', 1.3, 'elf'); // Elf
-createCharacter(0, 0, 10, './assets/reindeer.glb', 1.8, 'reindeer'); // Reindeer
+createCharacter(0, 0, 10, './assets/rudolf.glb', 1.8, 'rudolf'); // Rudolf
 
 // Animation Loop
 function animate() {
