@@ -50,6 +50,7 @@ const audioFiles = {
 Object.keys(audioFiles).forEach((key) => {
   audioLoader.load(audioFiles[key], (buffer) => {
     audioBuffers[key] = buffer; // Store the preloaded buffer
+    console.log(`Audio loaded for ${key}`); // Debugging: Ensure audio loads correctly
   }, undefined, (error) => {
     console.error(`Error loading audio file for ${key}:`, error);
   });
@@ -61,7 +62,6 @@ function createCharacter(x, y, z, modelFile, scale, audioKey = null) {
   anchor.position.set(x, y, z);
   scene.add(anchor);
 
-  // Load the 3D model
   const loader = new GLTFLoader();
   loader.load(
     modelFile,
@@ -77,6 +77,7 @@ function createCharacter(x, y, z, modelFile, scale, audioKey = null) {
         objectSound.setLoop(false);
         objectSound.setVolume(0.5);
         model.userData.sound = objectSound;
+        console.log(`Audio attached to ${audioKey}`); // Debugging: Ensure audio is linked
       }
     },
     undefined,
@@ -109,14 +110,26 @@ function animate() {
 
 animate();
 
-// Interactivity for Tap Events (Optimized for Phones/Tablets)
-renderer.domElement.addEventListener('touchstart', (event) => {
-  // Get the touch coordinates
-  const touch = event.touches[0];
-  mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+// Interactivity for Tap and Click Events
+function handleInteraction(event) {
+  let clientX, clientY;
 
-  // Update the Raycaster with the touch coordinates
+  // Determine if the event is a touch or click
+  if (event.touches) {
+    // Touch event
+    const touch = event.touches[0];
+    clientX = touch.clientX;
+    clientY = touch.clientY;
+  } else {
+    // Mouse event
+    clientX = event.clientX;
+    clientY = event.clientY;
+  }
+
+  // Normalize coordinates for the Raycaster
+  mouse.x = (clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
   raycaster.setFromCamera(mouse, camera);
 
   // Find intersections with objects in the scene
@@ -128,6 +141,11 @@ renderer.domElement.addEventListener('touchstart', (event) => {
     // Play the object's audio if available
     if (tappedObject.userData.sound && !tappedObject.userData.sound.isPlaying) {
       tappedObject.userData.sound.play();
+      console.log('Audio playing for tapped object'); // Debugging: Ensure audio playback
     }
   }
-});
+}
+
+// Add Event Listeners
+renderer.domElement.addEventListener('touchstart', handleInteraction); // For mobile devices
+renderer.domElement.addEventListener('click', handleInteraction); // For desktop testing
