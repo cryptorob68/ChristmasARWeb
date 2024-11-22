@@ -1,13 +1,18 @@
-// Import Three.js as an ES Module
+// Import Three.js and GLTFLoader as ES Modules
 import * as THREE from './libs/three.module.js';
+import { GLTFLoader } from './libs/GLTFLoader.js';
 
 // Unlock audio context for Safari
 const audioContext = THREE.AudioContext.getContext();
-document.body.addEventListener('touchstart', () => {
-  if (audioContext.state !== 'running') {
-    audioContext.resume();
-  }
-}, { once: true });
+document.body.addEventListener(
+  'touchstart',
+  () => {
+    if (audioContext.state !== 'running') {
+      audioContext.resume();
+    }
+  },
+  { once: true }
+);
 
 // Scene Initialization
 const scene = new THREE.Scene();
@@ -49,55 +54,62 @@ const audioListener = new THREE.AudioListener();
 camera.add(audioListener);
 
 const audioLoader = new THREE.AudioLoader();
+const audioBuffers = {};
 
-// Function to Create Anchors and Add Objects
-function createAnchor(x, y, z, color, shape = 'cube', audioFile = null) {
+// Preload Audio Files
+const audioFiles = {
+  santa: './assets/santa_audio.mp3',
+  grinch: './assets/grinch_audio.mp3',
+  elf: './assets/elf_audio.mp3',
+  reindeer: './assets/reindeer_audio.mp3',
+};
+
+Object.keys(audioFiles).forEach((key) => {
+  audioLoader.load(audioFiles[key], (buffer) => {
+    audioBuffers[key] = buffer; // Store the preloaded buffer
+  });
+});
+
+// Function to Add a Character with a Model and Audio
+function createCharacter(x, y, z, modelFile, scale, audioKey) {
   const anchor = new THREE.Object3D();
-  anchor.position.set(x, y, z); // Set anchor position
+  anchor.position.set(x, y, z);
   scene.add(anchor);
 
-  // Geometry Selection
-  let geometry;
-  if (shape === 'cube') geometry = new THREE.BoxGeometry();
-  else if (shape === 'sphere') geometry = new THREE.SphereGeometry(0.5, 32, 32);
-  else if (shape === 'cone') geometry = new THREE.ConeGeometry(0.5, 1, 32);
+  // Load the 3D model
+  const loader = new GLTFLoader();
+  loader.load(modelFile, (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(scale, scale, scale); // Scale the model
+    anchor.add(model);
 
-  const material = new THREE.MeshBasicMaterial({ color });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.userData.originalColor = color; // Store original color
-  anchor.add(mesh);
-
-  // Slightly raise the object above the grid
-  mesh.position.set(0, 0.5, 0);
-
-  // Attach Audio to the Object if Provided
-  if (audioFile) {
-    const objectSound = new THREE.Audio(audioListener);
-    audioLoader.load(audioFile, (buffer) => {
-      objectSound.setBuffer(buffer);
+    // Attach Preloaded Audio to the Model
+    if (audioKey && audioBuffers[audioKey]) {
+      const objectSound = new THREE.Audio(audioListener);
+      objectSound.setBuffer(audioBuffers[audioKey]);
       objectSound.setLoop(false);
       objectSound.setVolume(0.5);
-    });
-    mesh.userData.sound = objectSound; // Save the sound to the object
-  }
+      model.userData.sound = objectSound;
+    }
+  });
 
-  return mesh; // Return the object for reference
+  return anchor;
 }
 
-// Add Objects with Unique Audio
-createAnchor(0, 0, 0, 0x00ff00, 'cube'); // Central green cube (no audio)
-createAnchor(0, 5, 0, 0xff0000, 'cube', './assets/xmasmusic.mp3'); // Red cube with xmasmusic.mp3
-createAnchor(5, 0, 5, 0x0000ff, 'sphere', './assets/audio2.mp3'); // Blue sphere with audio2.mp3
-createAnchor(-5, 0, -5, 0xffff00, 'cone', './assets/audio3.mp3'); // Yellow cone with audio3.mp3
+// Add Characters
+createCharacter(0, 0, 0, './assets/santa.glb', 1.5, 'santa'); // Santa
+createCharacter(5, 0, 5, './assets/grinch.glb', 1.2, 'grinch'); // Grinch
+createCharacter(-5, 0, -5, './assets/elf.glb', 1.3, 'elf'); // Elf
+createCharacter(0, 0, 10, './assets/reindeer.glb', 1.8, 'reindeer'); // Reindeer
 
 // Animation Loop
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate only the objects, exclude the grid
+  // Rotate only the characters (not the grid)
   scene.children.forEach((child) => {
     if (child !== gridHelper && child instanceof THREE.Object3D) {
-      child.rotation.y += 0.01; // Rotate around the Y-axis
+      child.rotation.y += 0.01; // Rotate the anchor and its children
     }
   });
 
@@ -108,30 +120,20 @@ animate();
 
 // Interactivity for Tap Events
 renderer.domElement.addEventListener('touchstart', (event) => {
-  // Convert touch position to normalized device coordinates
   const touch = event.touches[0];
   mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
 
-  // Update the Raycaster
   raycaster.setFromCamera(mouse, camera);
 
-  // Find intersections
   const intersects = raycaster.intersectObjects(scene.children, true);
 
-  // If an object is tapped, handle the event
   if (intersects.length > 0) {
     const tappedObject = intersects[0].object;
 
-    // Play the object's audio if it has one
-    if (tappedObject.userData.sound) {
+    // Play the object's audio if available
+    if (tappedObject.userData.sound && !tappedObject.userData.sound.isPlaying) {
       tappedObject.userData.sound.play();
     }
-
-    // Optional: Change the object's color temporarily for feedback
-    tappedObject.material.color.set(0xff00ff); // Purple
-    setTimeout(() => {
-      tappedObject.material.color.set(tappedObject.userData.originalColor);
-    }, 300);
   }
 });
