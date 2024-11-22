@@ -56,10 +56,9 @@ camera.add(audioListener);
 const audioLoader = new THREE.AudioLoader();
 const audioBuffers = {};
 
-// Preload Audio Files (only those you have)
+// Preload Audio Files (Santa only for now)
 const audioFiles = {
-  santa: './assets/santa_audio.mp3',
-  // Add other audio files here as they become available
+  santa: './assets/xmasmusic.mp3', // Santa's audio
 };
 
 Object.keys(audioFiles).forEach((key) => {
@@ -106,10 +105,10 @@ function createCharacter(x, y, z, modelFile, scale, audioKey = null) {
 }
 
 // Add Characters
-createCharacter(0, 0, 0, './assets/santa.glb', 1.5, 'santa'); // Santa
-createCharacter(5, 0, 5, './assets/grinch.glb', 1.2); // Grinch (no audio yet)
-createCharacter(-5, 0, -5, './assets/elf.glb', 1.3); // Elf (no audio yet)
-createCharacter(0, 0, 10, './assets/rudolf.glb', 1.8); // Rudolf (no audio yet)
+createCharacter(0, 0, 0, './assets/Santa.glb', 1.5, 'santa'); // Santa with audio
+createCharacter(5, 0, 5, './assets/Grinch.glb', 1.2); // Grinch (no audio yet)
+createCharacter(-5, 0, -5, './assets/Elf.glb', 1.3); // Elf (no audio yet)
+createCharacter(0, 0, 10, './assets/Rudolf.glb', 1.8); // Rudolf (no audio yet)
 
 // Animation Loop
 function animate() {
