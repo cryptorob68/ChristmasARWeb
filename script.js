@@ -82,17 +82,6 @@ function createAnchorWithModel(x, y, z, modelFile, scale = 1) {
   return anchor;
 }
 
-  // Geometry Selection
-  let geometry;
-  if (shape === 'cube') geometry = new THREE.BoxGeometry();
-  else if (shape === 'sphere') geometry = new THREE.SphereGeometry(0.5, 32, 32);
-  else if (shape === 'cone') geometry = new THREE.ConeGeometry(0.5, 1, 32);
-
-  const material = new THREE.MeshBasicMaterial({ color });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.userData.originalColor = color;
-  anchor.add(mesh);
-
   // Slightly raise the object above the grid
   mesh.position.set(0, 0.5, 0);
 
