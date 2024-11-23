@@ -1,6 +1,5 @@
 // Import Three.js as an ES Module
 import * as THREE from './libs/three.module.js';
-import { GLTFLoader } from './libs/GLTFLoader.js';
 
 // Unlock audio context for Safari
 const audioContext = THREE.AudioContext.getContext();
@@ -66,21 +65,21 @@ Object.keys(audioFiles).forEach((key) => {
 });
 
 // Function to Create Anchors and Add Objects
-function createAnchorWithModel(x, y, z, modelFile, scale = 1) {
+function createAnchor(x, y, z, color, shape = 'cube', audioKey = null) {
   const anchor = new THREE.Object3D();
   anchor.position.set(x, y, z);
   scene.add(anchor);
 
-  // Load the 3D model
-  const loader = new GLTFLoader();
-  loader.load(modelFile, (gltf) => {
-    const model = gltf.scene;
-    model.scale.set(scale, scale, scale); // Scale the model
-    anchor.add(model);
-  });
+  // Geometry Selection
+  let geometry;
+  if (shape === 'cube') geometry = new THREE.BoxGeometry();
+  else if (shape === 'sphere') geometry = new THREE.SphereGeometry(0.5, 32, 32);
+  else if (shape === 'cone') geometry = new THREE.ConeGeometry(0.5, 1, 32);
 
-  return anchor;
-}
+  const material = new THREE.MeshBasicMaterial({ color });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.userData.originalColor = color;
+  anchor.add(mesh);
 
   // Slightly raise the object above the grid
   mesh.position.set(0, 0.5, 0);
@@ -109,10 +108,10 @@ createAnchor(-5, 0, -5, 0xffff00, 'cone', 'yellowCone'); // Yellow cone with aud
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate only the objects, exclude the grid
+  // Rotate objects around their Y-axis
   scene.children.forEach((child) => {
-    if (child !== gridHelper && child instanceof THREE.Object3D) {
-      child.rotation.y += 0.01; // Rotate around the Y-axis
+    if (child instanceof THREE.Object3D) {
+      child.rotation.y += 0.01;
     }
   });
 
