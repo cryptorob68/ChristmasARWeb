@@ -19,22 +19,22 @@ const scene = new THREE.Scene();
 
 // Camera Setup
 const camera = new THREE.PerspectiveCamera(
-  75, 
-  window.innerWidth / window.innerHeight, 
-  0.1, 
-  1000
+  75, // Field of View
+  window.innerWidth / window.innerHeight, // Aspect Ratio
+  0.1, // Near Clipping Plane
+  1000 // Far Clipping Plane
 );
-camera.position.set(10, 15, 20);
-camera.lookAt(0, 0, 0);
+camera.position.set(10, 15, 20); // Position the camera
+camera.lookAt(0, 0, 0); // Point the camera at the scene
 
 // Renderer Setup
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x222222); 
+renderer.setClearColor(0x222222); // Dark grey background
 document.body.appendChild(renderer.domElement);
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Soft white light
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -56,68 +56,60 @@ camera.add(audioListener);
 const audioLoader = new THREE.AudioLoader();
 const audioBuffers = {};
 
-// Preload Audio Files (only those you have)
+// Preload Audio Files
 const audioFiles = {
   santa: './assets/santa_audio.mp3',
-  // Add other audio files here as they become available
+  grinch: './assets/grinch_audio.mp3',
+  elf: './assets/elf_audio.mp3',
+  reindeer: './assets/reindeer_audio.mp3',
 };
 
 Object.keys(audioFiles).forEach((key) => {
   audioLoader.load(audioFiles[key], (buffer) => {
     audioBuffers[key] = buffer; // Store the preloaded buffer
-  },
-  undefined,
-  (error) => {
-    console.error(`Error loading audio file for ${key}:`, error);
   });
 });
 
-// Function to Add a Character with a Model and Optional Audio
-function createCharacter(x, y, z, modelFile, scale, audioKey = null) {
+// Function to Add a Character with a Model and Audio
+function createCharacter(x, y, z, modelFile, scale, audioKey) {
   const anchor = new THREE.Object3D();
   anchor.position.set(x, y, z);
   scene.add(anchor);
 
   // Load the 3D model
   const loader = new GLTFLoader();
-  loader.load(
-    modelFile,
-    (gltf) => {
-      const model = gltf.scene;
-      model.scale.set(scale, scale, scale);
-      anchor.add(model);
+  loader.load(modelFile, (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(scale, scale, scale); // Scale the model
+    anchor.add(model);
 
-      // Attach Preloaded Audio to the Model if Available
-      if (audioKey && audioBuffers[audioKey]) {
-        const objectSound = new THREE.Audio(audioListener);
-        objectSound.setBuffer(audioBuffers[audioKey]);
-        objectSound.setLoop(false);
-        objectSound.setVolume(0.5);
-        model.userData.sound = objectSound;
-      }
-    },
-    undefined,
-    (error) => {
-      console.error(`Error loading model file: ${modelFile}`, error);
+    // Attach Preloaded Audio to the Model
+    if (audioKey && audioBuffers[audioKey]) {
+      const objectSound = new THREE.Audio(audioListener);
+      objectSound.setBuffer(audioBuffers[audioKey]);
+      objectSound.setLoop(false);
+      objectSound.setVolume(0.5);
+      model.userData.sound = objectSound;
     }
-  );
+  });
 
   return anchor;
 }
 
 // Add Characters
 createCharacter(0, 0, 0, './assets/santa.glb', 1.5, 'santa'); // Santa
-createCharacter(5, 0, 5, './assets/grinch.glb', 1.2); // Grinch (no audio yet)
-createCharacter(-5, 0, -5, './assets/elf.glb', 1.3); // Elf (no audio yet)
-createCharacter(0, 0, 10, './assets/rudolf.glb', 1.8); // Rudolf (no audio yet)
+createCharacter(5, 0, 5, './assets/grinch.glb', 1.2, 'grinch'); // Grinch
+createCharacter(-5, 0, -5, './assets/elf.glb', 1.3, 'elf'); // Elf
+createCharacter(0, 0, 10, './assets/reindeer.glb', 1.8, 'reindeer'); // Reindeer
 
 // Animation Loop
 function animate() {
   requestAnimationFrame(animate);
 
+  // Rotate only the characters (not the grid)
   scene.children.forEach((child) => {
     if (child !== gridHelper && child instanceof THREE.Object3D) {
-      child.rotation.y += 0.01;
+      child.rotation.y += 0.01; // Rotate the anchor and its children
     }
   });
 
@@ -139,6 +131,7 @@ renderer.domElement.addEventListener('touchstart', (event) => {
   if (intersects.length > 0) {
     const tappedObject = intersects[0].object;
 
+    // Play the object's audio if available
     if (tappedObject.userData.sound && !tappedObject.userData.sound.isPlaying) {
       tappedObject.userData.sound.play();
     }
