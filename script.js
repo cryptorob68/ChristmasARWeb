@@ -108,10 +108,9 @@ createAnchor(-5, 0, -5, 0xffff00, 'cone', 'yellowCone'); // Yellow cone with aud
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate only the shapes (not the grid or other non-rotating objects)
+  // Rotate only the objects, exclude the grid
   scene.children.forEach((child) => {
-    // Check if the child is a rotating object (e.g., an anchor with shapes)
-    if (child instanceof THREE.Object3D && !child.isGridHelper) {
+    if (child !== gridHelper && child instanceof THREE.Object3D) {
       child.rotation.y += 0.01; // Rotate around the Y-axis
     }
   });
