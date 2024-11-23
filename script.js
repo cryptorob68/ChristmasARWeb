@@ -108,10 +108,10 @@ createAnchor(-5, 0, -5, 0xffff00, 'cone', 'yellowCone'); // Yellow cone with aud
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate objects around their Y-axis
+  // Rotate only the objects, exclude the grid
   scene.children.forEach((child) => {
-    if (child instanceof THREE.Object3D) {
-      child.rotation.y += 0.01;
+    if (child !== gridHelper && child instanceof THREE.Object3D) {
+      child.rotation.y += 0.01; // Rotate around the Y-axis
     }
   });
 
