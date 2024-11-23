@@ -1,5 +1,6 @@
 // Import Three.js as an ES Module
 import * as THREE from './libs/three.module.js';
+import { GLTFLoader } from './libs/GLTFLoader.js';
 
 // Unlock audio context for Safari
 const audioContext = THREE.AudioContext.getContext();
@@ -65,10 +66,21 @@ Object.keys(audioFiles).forEach((key) => {
 });
 
 // Function to Create Anchors and Add Objects
-function createAnchor(x, y, z, color, shape = 'cube', audioKey = null) {
+function createAnchorWithModel(x, y, z, modelFile, scale = 1) {
   const anchor = new THREE.Object3D();
   anchor.position.set(x, y, z);
   scene.add(anchor);
+
+  // Load the 3D model
+  const loader = new GLTFLoader();
+  loader.load(modelFile, (gltf) => {
+    const model = gltf.scene;
+    model.scale.set(scale, scale, scale); // Scale the model
+    anchor.add(model);
+  });
+
+  return anchor;
+}
 
   // Geometry Selection
   let geometry;
