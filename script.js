@@ -1,40 +1,35 @@
-// Import Three.js and GLTFLoader as ES Modules
+// Import Three.js as an ES Module
 import * as THREE from './libs/three.module.js';
-import { GLTFLoader } from './libs/GLTFLoader.js';
 
 // Unlock audio context for Safari
 const audioContext = THREE.AudioContext.getContext();
-document.body.addEventListener(
-  'touchstart',
-  () => {
-    if (audioContext.state !== 'running') {
-      audioContext.resume();
-    }
-  },
-  { once: true }
-);
+document.body.addEventListener('touchstart', () => {
+  if (audioContext.state !== 'running') {
+    audioContext.resume();
+  }
+}, { once: true });
 
 // Scene Initialization
 const scene = new THREE.Scene();
 
 // Camera Setup
 const camera = new THREE.PerspectiveCamera(
-  75, // Field of View
-  window.innerWidth / window.innerHeight, // Aspect Ratio
-  0.1, // Near Clipping Plane
-  1000 // Far Clipping Plane
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
-camera.position.set(10, 15, 20); // Position the camera
-camera.lookAt(0, 0, 0); // Point the camera at the scene
+camera.position.set(10, 15, 20);
+camera.lookAt(0, 0, 0);
 
 // Renderer Setup
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x222222); // Dark grey background
+renderer.setClearColor(0x222222);
 document.body.appendChild(renderer.domElement);
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); // Soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -54,14 +49,13 @@ const audioListener = new THREE.AudioListener();
 camera.add(audioListener);
 
 const audioLoader = new THREE.AudioLoader();
-const audioBuffers = {};
+const audioBuffers = {}; // Store preloaded audio buffers
 
 // Preload Audio Files
 const audioFiles = {
-  santa: './assets/santa_audio.mp3',
-  grinch: './assets/grinch_audio.mp3',
-  elf: './assets/elf_audio.mp3',
-  reindeer: './assets/reindeer_audio.mp3',
+  redCube: './assets/xmasmusic.mp3',
+  blueSphere: './assets/audio2.mp3',
+  yellowCone: './assets/audio3.mp3',
 };
 
 Object.keys(audioFiles).forEach((key) => {
@@ -70,46 +64,54 @@ Object.keys(audioFiles).forEach((key) => {
   });
 });
 
-// Function to Add a Character with a Model and Audio
-function createCharacter(x, y, z, modelFile, scale, audioKey) {
+// Function to Create Anchors and Add Objects
+function createAnchor(x, y, z, color, shape = 'cube', audioKey = null) {
   const anchor = new THREE.Object3D();
   anchor.position.set(x, y, z);
   scene.add(anchor);
 
-  // Load the 3D model
-  const loader = new GLTFLoader();
-  loader.load(modelFile, (gltf) => {
-    const model = gltf.scene;
-    model.scale.set(scale, scale, scale); // Scale the model
-    anchor.add(model);
+  // Geometry Selection
+  let geometry;
+  if (shape === 'cube') geometry = new THREE.BoxGeometry();
+  else if (shape === 'sphere') geometry = new THREE.SphereGeometry(0.5, 32, 32);
+  else if (shape === 'cone') geometry = new THREE.ConeGeometry(0.5, 1, 32);
 
-    // Attach Preloaded Audio to the Model
-    if (audioKey && audioBuffers[audioKey]) {
-      const objectSound = new THREE.Audio(audioListener);
+  const material = new THREE.MeshBasicMaterial({ color });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.userData.originalColor = color;
+  anchor.add(mesh);
+
+  // Slightly raise the object above the grid
+  mesh.position.set(0, 0.5, 0);
+
+  // Attach Preloaded Audio to the Object
+  if (audioKey) {
+    const objectSound = new THREE.Audio(audioListener);
+    if (audioBuffers[audioKey]) {
       objectSound.setBuffer(audioBuffers[audioKey]);
       objectSound.setLoop(false);
       objectSound.setVolume(0.5);
-      model.userData.sound = objectSound;
+      mesh.userData.sound = objectSound;
     }
-  });
+  }
 
-  return anchor;
+  return mesh;
 }
 
-// Add Characters
-createCharacter(0, 0, 0, './assets/santa.glb', 1.5, 'santa'); // Santa
-createCharacter(5, 0, 5, './assets/grinch.glb', 1.2, 'grinch'); // Grinch
-createCharacter(-5, 0, -5, './assets/elf.glb', 1.3, 'elf'); // Elf
-createCharacter(0, 0, 10, './assets/reindeer.glb', 1.8, 'reindeer'); // Reindeer
+// Add Objects with Unique Audio
+createAnchor(0, 0, 0, 0x00ff00, 'cube'); // Central green cube (no audio)
+createAnchor(0, 5, 0, 0xff0000, 'cube', 'redCube'); // Red cube with xmasmusic.mp3
+createAnchor(5, 0, 5, 0x0000ff, 'sphere', 'blueSphere'); // Blue sphere with audio2.mp3
+createAnchor(-5, 0, -5, 0xffff00, 'cone', 'yellowCone'); // Yellow cone with audio3.mp3
 
 // Animation Loop
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate only the characters (not the grid)
+  // Rotate objects around their Y-axis
   scene.children.forEach((child) => {
-    if (child !== gridHelper && child instanceof THREE.Object3D) {
-      child.rotation.y += 0.01; // Rotate the anchor and its children
+    if (child instanceof THREE.Object3D) {
+      child.rotation.y += 0.01;
     }
   });
 
@@ -135,5 +137,11 @@ renderer.domElement.addEventListener('touchstart', (event) => {
     if (tappedObject.userData.sound && !tappedObject.userData.sound.isPlaying) {
       tappedObject.userData.sound.play();
     }
+
+    // Optional: Change the object's color temporarily for feedback
+    tappedObject.material.color.set(0xff00ff);
+    setTimeout(() => {
+      tappedObject.material.color.set(tappedObject.userData.originalColor);
+    }, 300);
   }
 });
